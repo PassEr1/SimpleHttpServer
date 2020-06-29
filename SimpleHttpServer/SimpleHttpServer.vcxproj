@@ -150,16 +150,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DirectoryIterator.cpp" />
+    <ClCompile Include="FileReader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PathReader.cpp" />
     <ClCompile Include="simple_http_server.cpp" />
+    <ClCompile Include="SmartHandleHolder.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DirectoryIterator.h" />
+    <ClInclude Include="FileReader.h" />
     <ClInclude Include="http_exceptions.h" />
     <ClInclude Include="PathReader.h" />
     <ClInclude Include="simple_http_server.h" />
+    <ClInclude Include="SmartHandleHolder.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

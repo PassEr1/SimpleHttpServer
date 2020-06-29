@@ -5,6 +5,7 @@
 #include <memory>
 #include <map>
 #include "Utils.h"
+#include "FileReader.h"
 
 static DWORD DEFAULT_READ_SIZE = 2028;
 
