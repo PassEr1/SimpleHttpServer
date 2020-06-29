@@ -1,33 +1,40 @@
 #include "DirectoryIterator.h"
 #include <exception>
+#include "Utils.h"
 
 
 
-DirectroyIterator::DirectroyIterator(const std::wstring& path)
-	:_hfind(get_find_handler(path)),
+DirectoryIterator::DirectoryIterator(const std::wstring& path)
+	:_hfind(get_find_handle(path)),
 	_has_next(TRUE)
 {
 }
 
-DirectroyIterator::~DirectroyIterator()
+DirectoryIterator::~DirectoryIterator()
 {
-	FindClose(_hfind); // CR: always try catch in destructor
+	try {
+		FindClose(_hfind);
+	}
+	catch (...)
+	{
+	}
 }
 
-DirectroyIterator::StringBuffer DirectroyIterator::get_next()
+std::wstring DirectoryIterator::get_next()
 {
-	StringBuffer next_file_name_to_return(_next_file.cFileName);
+	std::wstring next_file_name_to_return(_next_file.cFileName);
 	_has_next = FindNextFileW(_hfind, &_next_file); //update data for next use. 
-	// CR: check GetLastError to see if this failed because there are no more files or because the dir is empty. Throw exception if its a real error
+	THROW_IF_NOT(GetLastError() != ERROR_NO_MORE_FILES);
+
 	return next_file_name_to_return;
 }
 
-bool DirectroyIterator::has_next()const
+bool DirectoryIterator::has_next()const
 {
 	return _has_next;
 }
 
-HANDLE DirectroyIterator::get_find_handler(const std::wstring& path)
+HANDLE DirectoryIterator::get_find_handle(const std::wstring& path)
 {
 	HANDLE h_find = FindFirstFileW(path.c_str(), &_next_file);
 	

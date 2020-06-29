@@ -81,7 +81,7 @@ PathIdentifier::StringBuffer PathIdentifier::directory_handler() const
 	unsigned long size_going_to_be_written = 0;
 
 	path_builder << _abs_path << L"\\*";
-	DirectroyIterator iterator(path_builder.str());
+	DirectoryIterator iterator(path_builder.str());
 
 	while (iterator.has_next() && (total_bytes_read < _max_size_for_data))
 	{
