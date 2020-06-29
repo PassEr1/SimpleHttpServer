@@ -11,13 +11,14 @@ DirectroyIterator::DirectroyIterator(const std::wstring& path)
 
 DirectroyIterator::~DirectroyIterator()
 {
-	FindClose(_hfind);
+	FindClose(_hfind); // CR: always try catch in destructor
 }
 
 DirectroyIterator::StringBuffer DirectroyIterator::get_next()
 {
 	StringBuffer next_file_name_to_return(_next_file.cFileName);
-	_has_next = FindNextFileW(_hfind, &_next_file); //update data for next use.
+	_has_next = FindNextFileW(_hfind, &_next_file); //update data for next use. 
+	// CR: check GetLastError to see if this failed because there are no more files or because the dir is empty. Throw exception if its a real error
 	return next_file_name_to_return;
 }
 
