@@ -3,7 +3,7 @@
 #include <string>
 #include <strsafe.h>
 #include "simple_http_server.h"
-#include "PathIdentifier.h"
+#include "PathReader.h"
 #include "Utils.h"
 
 #define UNLIMITED_STRING 1024*1024
@@ -273,7 +273,7 @@ PCWSTR SimpleHttpServer::fnHandleRequestGet(LPVOID pDataStructure)
     PCWSTR fullPathToRead = appendToBasePath(
         m_szServerRootPath,
         pRequest->CookedUrl.pAbsPath + 1); // ignore first '/'
-    PathIdentifier pathReader(fullPathToRead, UNLIMITED_STRING);
+    PathReader pathReader(fullPathToRead, UNLIMITED_STRING);
     std::wstring massage = std::wstring(L"[INFO] got file/path show request: ")
         + std::wstring(fullPathToRead);
 

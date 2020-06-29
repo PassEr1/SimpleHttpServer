@@ -112,7 +112,7 @@ FileReader::Buffer FileReader::read(size_t size) const
 	static const LPOVERLAPPED DONT_USE_OVERLLAPED = NULL;
 	unsigned long total_bytes_read = 0;
 	DWORD bytes_read = 0;
-	bool status=TRUE;
+	bool status = TRUE;
 	Buffer buffer(size);
 
 	while (
@@ -135,4 +135,22 @@ FileReader::Buffer FileReader::read(size_t size) const
 
 	buffer.resize(total_bytes_read);
 	return buffer;
+}
+
+FileReader::PathAttribute FileReader::get_path_attribute(const std::wstring& path)
+{
+	DWORD attribute_identifer = GetFileAttributesW(path.c_str());
+	if (INVALID_FILE_ATTRIBUTES == attribute_identifer)
+	{
+		return PathAttribute::None;
+	}
+
+	else if (FILE_ATTRIBUTE_DIRECTORY & attribute_identifer)
+	{
+		return PathAttribute::Directory;
+	}
+	else // is a file
+	{
+		return PathAttribute::File;
+	}
 }

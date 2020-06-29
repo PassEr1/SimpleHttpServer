@@ -151,14 +151,14 @@
   <ItemGroup>
     <ClCompile Include="DirectoryIterator.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="PathIdentifier.cpp" />
+    <ClCompile Include="PathReader.cpp" />
     <ClCompile Include="simple_http_server.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DirectoryIterator.h" />
     <ClInclude Include="http_exceptions.h" />
-    <ClInclude Include="PathIdentifier.h" />
+    <ClInclude Include="PathReader.h" />
     <ClInclude Include="simple_http_server.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
