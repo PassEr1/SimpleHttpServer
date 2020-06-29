@@ -12,7 +12,7 @@ DirectoryIterator::DirectoryIterator(const std::wstring& path)
 
 DirectoryIterator::~DirectoryIterator()
 {
-	try {
+	try { // CR: new line before {
 		FindClose(_hfind);
 	}
 	catch (...)
@@ -24,7 +24,7 @@ std::wstring DirectoryIterator::get_next()
 {
 	std::wstring next_file_name_to_return(_next_file.cFileName);
 	_has_next = FindNextFileW(_hfind, &_next_file); //update data for next use. 
-	THROW_IF_NOT(GetLastError() != ERROR_NO_MORE_FILES);
+	THROW_IF_NOT(GetLastError() != ERROR_NO_MORE_FILES); // CR: weird logic here. think about it...
 
 	return next_file_name_to_return;
 }

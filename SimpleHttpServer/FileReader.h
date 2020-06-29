@@ -11,7 +11,7 @@ public:
 	using Buffer = std::vector<char>;
 
 public:
-	FileReader(const std::wstring file_path, DWORD share_mode, DWORD creation_disposition);
+	FileReader(const std::wstring file_path, DWORD share_mode, DWORD creation_disposition); // CR: const reference
 	~FileReader();
 
 public:
@@ -25,8 +25,9 @@ public:
 	FileReader& operator=(FileReader& other) = delete;
 
 private:
+	// CR: typo + const reference + should be static. 
 	HANDLE get_file_hanler(const std::wstring file_path, DWORD share_mode, DWORD creation_disposition);
 
 private:
-	SmartHandleHolder _file_handler;
+	SmartHandleHolder _file_handler; // CR: I would rather you have a handle class that you inherit from.
 };

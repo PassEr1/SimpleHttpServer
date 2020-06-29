@@ -7,7 +7,7 @@ public:
 	SmartHandleHolder(HANDLE handle);
 	~SmartHandleHolder();
 
-public:
+public: // CR: If you change to inheritance, this should be protected
 	HANDLE data()const;
 
 public:

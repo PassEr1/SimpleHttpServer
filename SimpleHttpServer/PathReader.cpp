@@ -19,6 +19,7 @@ PathReader::~PathReader()
 
 PathReader::HandlersMapping PathReader::get_path_handlers()const
 {
+	// CR: a bit over generic, but not too bad :)
 	HandlersMapping mapping_handlers;
 	mapping_handlers.insert({ FileReader::PathAttribute::File , &PathReader::file_handle});
 	mapping_handlers.insert({ FileReader::PathAttribute::Directory, &PathReader::directory_handle});
@@ -26,6 +27,7 @@ PathReader::HandlersMapping PathReader::get_path_handlers()const
 	return mapping_handlers;
 }
 
+// CR: this is unused... is the question still relevant?
 HANDLE PathReader::get_file_hanler()const // for CR maker: should I return here a unique ptr that usese Win32 API "CloseHandle" function ?
 {
 	HANDLE hfile = CreateFileW(_abs_path.c_str(),
@@ -40,6 +42,7 @@ HANDLE PathReader::get_file_hanler()const // for CR maker: should I return here 
 	return hfile;
 }
 
+// CR: typo
 PathReader::StringBuffer PathReader::defualt_handler() const
 {
 	return _default_empty_data;
@@ -61,9 +64,12 @@ PathReader::StringBuffer PathReader::directory_handle() const
 	std::wostringstream path_builder;
 	StringBuffer buffer(_max_size_for_data);
 
-	path_builder << _abs_path << L"\\*";
+// CR: 1. I think this should be appended in the DirectoryIterator class. 2. just add strings... no need for the wostringstream. 3. use static const for magic values!
+	path_builder << _abs_path << L"\\*"; 
 	DirectoryIterator iterator(path_builder.str());
 
+// CR: I think youll have a much better time just building the string and returing a vector at the end.
+// CR: I will look at this function again after you remove the max size code.
 	while (iterator.has_next() && (total_bytes_read < _max_size_for_data))
 	{
 		std::wstring file_name = iterator.get_next();

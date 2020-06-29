@@ -21,7 +21,7 @@ public:
 	DirectoryIterator& operator=(DirectoryIterator&& other) = delete;
 
 private:
-	HANDLE get_find_handle(const std::wstring& path);
+	HANDLE get_find_handle(const std::wstring& path); // CR: should be static
 
 private:
 	const HANDLE _hfind;
