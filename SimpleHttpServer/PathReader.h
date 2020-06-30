@@ -12,8 +12,7 @@ static DWORD DEFAULT_READ_SIZE_BYTES = 1024 * 1024;
 class PathReader
 {
 public:
-	using StringBufferPtr = std::shared_ptr<FileReader::Buffer>;
-	using MemberFunctionPathHandler = FileReader::Buffer (PathReader::*)(void) const;
+	using MemberFunctionPathHandler = FileReader::BufferPtr (PathReader::*)(void) const;
 	using HandlersMapping = std::map<FileReader::PathAttribute, MemberFunctionPathHandler>;
 
 public:
@@ -21,7 +20,7 @@ public:
 	~PathReader();
 
 public:
-	StringBufferPtr read_now()const;
+	FileReader::BufferPtr read_now()const;
 
 public:
 	PathReader(const PathReader& other)=delete;
@@ -31,9 +30,9 @@ public:
 
 private:
 	HandlersMapping get_path_handlers() const;
-	FileReader::Buffer defult_handler() const;
-	FileReader::Buffer file_handle()const;
-	FileReader::Buffer directory_handle()const;
+	FileReader::BufferPtr defult_handler() const;
+	FileReader::BufferPtr file_handle()const;
+	FileReader::BufferPtr directory_handle()const;
 	
 private:
 	const std::wstring _abs_path;

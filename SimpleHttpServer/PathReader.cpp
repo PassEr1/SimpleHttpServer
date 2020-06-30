@@ -25,20 +25,20 @@ PathReader::HandlersMapping PathReader::get_path_handlers()const
 	return mapping_handlers;
 }
 
-FileReader::Buffer PathReader::defult_handler() const
+FileReader::BufferPtr PathReader::defult_handler() const
 {
 	static const FileReader::Buffer _default_empty_data = FileReader::Buffer();
-	return _default_empty_data;
+	return std::make_shared<FileReader::Buffer>(_default_empty_data);
 }
 
-FileReader::Buffer PathReader::file_handle() const
+FileReader::BufferPtr PathReader::file_handle() const
 {
 	static const LPOVERLAPPED DONT_USE_OVERLLAPED = NULL;
 	FileReader file_reader(_abs_path, FILE_SHARE_READ, OPEN_EXISTING);
 	return file_reader.read(DEFAULT_READ_SIZE_BYTES);
 }
 
-FileReader::Buffer PathReader::directory_handle() const
+FileReader::BufferPtr PathReader::directory_handle() const
 {
 	static unsigned int SIZE_OF_NEW_LINE_CHARACTER = 2;
 	static const std::wstring NEW_LINE_CHARACTER(L"\n");
@@ -55,18 +55,18 @@ FileReader::Buffer PathReader::directory_handle() const
 		builded_result += (file_name + NEW_LINE_CHARACTER);
 	}
 
-	unsigned int size_of_result = builded_result.length() * sizeof(WCHAR);
+	unsigned int size_of_result = (builded_result.length()) * sizeof(WCHAR);
 	buffer.resize(size_of_result);
 	CopyMemory(buffer.data(), builded_result.data(), size_of_result);
-	return buffer;
+	return std::make_shared<FileReader::Buffer>(buffer);
 }
 
-PathReader::StringBufferPtr PathReader::read_now() const
+FileReader::BufferPtr PathReader::read_now() const
 {
 	FileReader::PathAttribute path_attribute = FileReader::get_path_attribute(_abs_path);
 	HandlersMapping handlers_mapping = get_path_handlers();
 	MemberFunctionPathHandler selected_handler = handlers_mapping[path_attribute];
-	FileReader::Buffer result_buffer = (this->*selected_handler)();
-	return std::make_shared<FileReader::Buffer>(result_buffer);
+	FileReader::BufferPtr presult_buffer = (this->*selected_handler)();
+	return presult_buffer;
 }
 

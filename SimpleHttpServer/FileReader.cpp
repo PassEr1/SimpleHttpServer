@@ -26,7 +26,7 @@ FileReader::~FileReader()
 {
 }
 
-FileReader::Buffer FileReader::read(size_t size) const
+FileReader::BufferPtr FileReader::read(size_t size) const
 {
 	static const LPOVERLAPPED DONT_USE_OVERLLAPED = NULL;
 	unsigned long total_bytes_read = 0;
@@ -43,7 +43,7 @@ FileReader::Buffer FileReader::read(size_t size) const
 
 	THROW_IF_NOT(status);
 	buffer.resize(total_bytes_read);
-	return buffer;
+	return std::make_shared<Buffer>(buffer);
 }
 
 FileReader::PathAttribute FileReader::get_path_attribute(const std::wstring& path)
