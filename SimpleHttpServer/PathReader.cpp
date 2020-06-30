@@ -4,11 +4,10 @@
 #include "DirectoryIterator.h"
 #include "Utils.h"
 
-const PathReader::StringBuffer PathReader::_default_empty_data = StringBuffer();
 
-PathReader::PathReader(const std::wstring& abs_path, DWORD max_size_for_data)
-:_max_size_for_data(max_size_for_data),
-_abs_path(abs_path)		
+
+PathReader::PathReader(const std::wstring& abs_path)
+:_abs_path(abs_path)		
 {
 }
 
@@ -19,79 +18,46 @@ PathReader::~PathReader()
 
 PathReader::HandlersMapping PathReader::get_path_handlers()const
 {
-	// CR: a bit over generic, but not too bad :)
 	HandlersMapping mapping_handlers;
 	mapping_handlers.insert({ FileReader::PathAttribute::File , &PathReader::file_handle});
 	mapping_handlers.insert({ FileReader::PathAttribute::Directory, &PathReader::directory_handle});
-	mapping_handlers.insert({ FileReader::PathAttribute::None, &PathReader::defualt_handler});
+	mapping_handlers.insert({ FileReader::PathAttribute::None, &PathReader::defult_handler});
 	return mapping_handlers;
 }
 
-// CR: this is unused... is the question still relevant?
-HANDLE PathReader::get_file_hanler()const // for CR maker: should I return here a unique ptr that usese Win32 API "CloseHandle" function ?
+FileReader::Buffer PathReader::defult_handler() const
 {
-	HANDLE hfile = CreateFileW(_abs_path.c_str(),
-		GENERIC_READ,
-		0,
-		NULL,
-		OPEN_EXISTING,
-		FILE_ATTRIBUTE_NORMAL,
-		NULL
-	);
-
-	return hfile;
-}
-
-// CR: typo
-PathReader::StringBuffer PathReader::defualt_handler() const
-{
+	static const FileReader::Buffer _default_empty_data = FileReader::Buffer();
 	return _default_empty_data;
 }
 
-PathReader::StringBuffer PathReader::file_handle() const
+FileReader::Buffer PathReader::file_handle() const
 {
 	static const LPOVERLAPPED DONT_USE_OVERLLAPED = NULL;
 	FileReader file_reader(_abs_path, FILE_SHARE_READ, OPEN_EXISTING);
-	return file_reader.read(_max_size_for_data);
+	return file_reader.read(DEFAULT_READ_SIZE_BYTES);
 }
 
-PathReader::StringBuffer PathReader::directory_handle() const
+FileReader::Buffer PathReader::directory_handle() const
 {
 	static unsigned int SIZE_OF_NEW_LINE_CHARACTER = 2;
+	static const std::wstring NEW_LINE_CHARACTER(L"\n");
 	unsigned int total_bytes_read = 0;
 	unsigned long append_offset = 0;
 	unsigned long size_going_to_be_written = 0;
-	std::wostringstream path_builder;
-	StringBuffer buffer(_max_size_for_data);
+	FileReader::Buffer buffer;
+	DirectoryIterator iterator(_abs_path);
+	std::wstring builded_result;
 
-// CR: 1. I think this should be appended in the DirectoryIterator class. 2. just add strings... no need for the wostringstream. 3. use static const for magic values!
-	path_builder << _abs_path << L"\\*"; 
-	DirectoryIterator iterator(path_builder.str());
-
-// CR: I think youll have a much better time just building the string and returing a vector at the end.
-// CR: I will look at this function again after you remove the max size code.
-	while (iterator.has_next() && (total_bytes_read < _max_size_for_data))
+	while (iterator.has_next())
 	{
 		std::wstring file_name = iterator.get_next();
-		size_going_to_be_written = 
-			file_name.size() * sizeof(WCHAR) 
-			+ SIZE_OF_NEW_LINE_CHARACTER;
-
-		if (size_going_to_be_written + total_bytes_read > _max_size_for_data)
-		{
-			break;
-		}
-
-		append_offset = total_bytes_read;
-		add_string_to_vector(file_name, buffer, append_offset);
-
-		append_offset = total_bytes_read + file_name.size() * sizeof(WCHAR);
-		add_string_to_vector(L"\n", buffer, append_offset);
-		total_bytes_read += size_going_to_be_written;
-	
+		builded_result += (file_name + NEW_LINE_CHARACTER);
 	}
 
-	buffer.resize(total_bytes_read);
+	unsigned int size_of_result = builded_result.length() * sizeof(WCHAR);
+	buffer.resize(size_of_result);
+	CopyMemory(buffer.data(), builded_result.data(), size_of_result);
 	return buffer;
 }
 
@@ -100,7 +66,7 @@ PathReader::StringBufferPtr PathReader::read_now() const
 	FileReader::PathAttribute path_attribute = FileReader::get_path_attribute(_abs_path);
 	HandlersMapping handlers_mapping = get_path_handlers();
 	MemberFunctionPathHandler selected_handler = handlers_mapping[path_attribute];
-	StringBuffer result_buffer = (this->*selected_handler)();
-	return std::make_shared<StringBuffer>(result_buffer);
+	FileReader::Buffer result_buffer = (this->*selected_handler)();
+	return std::make_shared<FileReader::Buffer>(result_buffer);
 }
 

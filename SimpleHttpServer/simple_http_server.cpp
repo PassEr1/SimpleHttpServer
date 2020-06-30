@@ -273,7 +273,7 @@ PCWSTR SimpleHttpServer::fnHandleRequestGet(LPVOID pDataStructure)
     PCWSTR fullPathToRead = appendToBasePath(
         m_szServerRootPath,
         pRequest->CookedUrl.pAbsPath + 1); // ignore first '/'
-    PathReader pathReader(fullPathToRead, UNLIMITED_STRING);
+    PathReader pathReader(fullPathToRead);
     std::wstring massage = std::wstring(L"[INFO] got file/path show request: ")
         + std::wstring(fullPathToRead);
 

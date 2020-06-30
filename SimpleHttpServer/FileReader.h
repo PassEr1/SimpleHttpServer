@@ -5,7 +5,9 @@
 
 
 
-class FileReader {
+class FileReader 
+	:public SmartHandleHolder
+{
 public:
 	enum class PathAttribute { Directory, File, None };
 	using Buffer = std::vector<char>;
@@ -25,9 +27,6 @@ public:
 	FileReader& operator=(FileReader& other) = delete;
 
 private:
-	// CR: typo + const reference + should be static. 
-	HANDLE get_file_hanler(const std::wstring file_path, DWORD share_mode, DWORD creation_disposition);
+	static HANDLE get_file_handler(const std::wstring& file_path, DWORD share_mode, DWORD creation_disposition);
 
-private:
-	SmartHandleHolder _file_handler; // CR: I would rather you have a handle class that you inherit from.
 };

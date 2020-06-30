@@ -3,12 +3,15 @@
 
 class SmartHandleHolder
 {
+
 public:
 	SmartHandleHolder(HANDLE handle);
 	~SmartHandleHolder();
 
-public: // CR: If you change to inheritance, this should be protected
-	HANDLE data()const;
+	// for CR maker: what if someone would like to use it with composition and hold muliple "Handlers" for instance ?
+	//doesnt is should be public?
+public: 
+	HANDLE get_handle()const;
 
 public:
 	SmartHandleHolder(const SmartHandleHolder& other) = delete;

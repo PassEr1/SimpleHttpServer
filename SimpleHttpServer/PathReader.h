@@ -7,19 +7,17 @@
 #include "Utils.h"
 #include "FileReader.h"
 
-static DWORD DEFAULT_READ_SIZE = 2028;
+static DWORD DEFAULT_READ_SIZE_BYTES = 1024 * 1024;
 
 class PathReader
 {
 public:
-	using StringBuffer = std::vector<char>; // CR: just use the same buffer from FileReader
-	using StringBufferPtr = std::shared_ptr<StringBuffer>;
-	using MemberFunctionPathHandler = StringBuffer (PathReader::*)(void) const;
+	using StringBufferPtr = std::shared_ptr<FileReader::Buffer>;
+	using MemberFunctionPathHandler = FileReader::Buffer (PathReader::*)(void) const;
 	using HandlersMapping = std::map<FileReader::PathAttribute, MemberFunctionPathHandler>;
 
 public:
-	// CR: for simplicity, doint support the max size. just return all the data.
-	PathReader(const std::wstring& abs_path, DWORD max_size_for_data = DEFAULT_READ_SIZE);
+	PathReader(const std::wstring& abs_path);
 	~PathReader();
 
 public:
@@ -34,14 +32,12 @@ public:
 private:
 	HandlersMapping get_path_handlers() const;
 	HANDLE get_file_hanler() const; // CR: unused... remove this
-	PathReader::StringBuffer defualt_handler() const;
-	StringBuffer file_handle()const;
-	StringBuffer directory_handle()const;
+	FileReader::Buffer defult_handler() const;
+	FileReader::Buffer file_handle()const;
+	FileReader::Buffer directory_handle()const;
 	
 private:
 	const std::wstring _abs_path;
-	const unsigned int _max_size_for_data;
-	static const StringBuffer _default_empty_data; // CR: this can be made static in the function, no need for it here.
 };
 
 

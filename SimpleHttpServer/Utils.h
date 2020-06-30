@@ -6,8 +6,12 @@
 #include <exception>
 
 #define THROW_IF_NOT(condition)\
+{\
 	if(!(condition))\
+	{\
 		throw std::exception();\
+	}\
+}\
 
 
 size_t fnGetWStringLength(PCWSTR szString, size_t maxSize);

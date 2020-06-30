@@ -1,7 +1,7 @@
 #include "FileReader.h"
 
 
-HANDLE FileReader::get_file_hanler(const std::wstring file_path, DWORD share_mode, DWORD creation_disposition)
+HANDLE FileReader::get_file_handler(const std::wstring& file_path, DWORD share_mode, DWORD creation_disposition)
 {
 	HANDLE hfile = CreateFileW(
 		file_path.c_str(),
@@ -18,7 +18,7 @@ HANDLE FileReader::get_file_hanler(const std::wstring file_path, DWORD share_mod
 }
 
 FileReader::FileReader(const std::wstring file_path, DWORD share_mode, DWORD creation_disposition)
-	:_file_handler(get_file_hanler(file_path, share_mode, creation_disposition))
+:SmartHandleHolder(get_file_handler(file_path, share_mode, creation_disposition))
 {
 }
 
@@ -44,7 +44,7 @@ FileReader::Buffer FileReader::read(size_t size) const
 		&& status)
 	{
 		status = ReadFile(
-			_file_handler.data(),
+			this->get_handle(), //for expressivity sake
 			buffer.data() + total_bytes_read,
 			size,
 			&bytes_read,

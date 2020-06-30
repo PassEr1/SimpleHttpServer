@@ -21,7 +21,13 @@ public:
 	DirectoryIterator& operator=(DirectoryIterator&& other) = delete;
 
 private:
-	HANDLE get_find_handle(const std::wstring& path); // CR: should be static
+	/*
+	For CR maker: making this function, static enforced me to pass it a pointer to my first-file's data.
+				  And this is because we have to "know" the first file by calling the function "FindFirst" of win api.
+				  why do you think this shoul be static though?
+	*/
+	static HANDLE get_find_handle(const std::wstring& path, PWIN32_FIND_DATAW first_file_found_ptr); 
+
 
 private:
 	const HANDLE _hfind;
