@@ -1,5 +1,5 @@
 #include "FileReader.h"
-
+#include "Utils.h"
 
 HANDLE FileReader::get_file_handler(const std::wstring& file_path, DWORD share_mode, DWORD creation_disposition)
 {
@@ -28,37 +28,22 @@ FileReader::~FileReader()
 
 FileReader::Buffer FileReader::read(size_t size) const
 {
-	// CR: unlike write... read either succeeds with all the bytes you asked for (or less if the file 
-	// is shorter) or fails. no need for a loop here. 
-	// Even if you did need a loop, there is no error handling here! Almost all functions where you call a 
-	// winapi function should have an error flow with an exception...
-
 	static const LPOVERLAPPED DONT_USE_OVERLLAPED = NULL;
 	unsigned long total_bytes_read = 0;
 	DWORD bytes_read = 0;
 	bool status = TRUE;
 	Buffer buffer(size);
 
-	while (
-		(total_bytes_read < size)
-		&& status)
-	{
-		status = ReadFile(
-			this->get_handle(), //for expressivity sake
-			buffer.data() + total_bytes_read,
-			size,
-			&bytes_read,
-			DONT_USE_OVERLLAPED);
+	status = ReadFile(
+		this->get_handle(), //for expressivity sake
+		buffer.data() + total_bytes_read,
+		size,
+		&bytes_read,
+		DONT_USE_OVERLLAPED);
 
-		if (!status || !bytes_read)
-		{
-			break;
-		}
-		total_bytes_read += bytes_read;
-	}
-
+	THROW_IF_NOT(status);
 	buffer.resize(total_bytes_read);
-	return buffer; // CR: this buffer is copied. also, put the using somewhere more useful (buffer.hpp maybe) so that you wont need to redefine it
+	return buffer;
 }
 
 FileReader::PathAttribute FileReader::get_path_attribute(const std::wstring& path)
@@ -73,7 +58,7 @@ FileReader::PathAttribute FileReader::get_path_attribute(const std::wstring& pat
 	{
 		return PathAttribute::Directory;
 	}
-	else // is a file
+	else
 	{
 		return PathAttribute::File;
 	}

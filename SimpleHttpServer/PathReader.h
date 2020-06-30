@@ -31,7 +31,6 @@ public:
 
 private:
 	HandlersMapping get_path_handlers() const;
-	HANDLE get_file_hanler() const; // CR: unused... remove this
 	FileReader::Buffer defult_handler() const;
 	FileReader::Buffer file_handle()const;
 	FileReader::Buffer directory_handle()const;
